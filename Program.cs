@@ -32,3 +32,7 @@ app.UseAuthorization();
 app.MapRazorPages();
 
 app.Run();
+
+/*
+dotnet aspnet-codegenerator razorpage -m razorweb.models.Article -dc razorweb.models.MyBlogContext -outDir Pages/Blog -udl --referenceScriptLibraries
+*/

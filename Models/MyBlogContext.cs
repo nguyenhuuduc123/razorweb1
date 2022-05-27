@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 
 namespace razorweb.models{
+    //razorweb.models.MyBlogContext
     public class MyBlogContext : DbContext {
         public MyBlogContext(DbContextOptions<MyBlogContext> options) : base(options)
         {
@@ -13,7 +14,7 @@ namespace razorweb.models{
             base.OnModelCreating(builder);
             
         }
-        public DbSet<Article>? articles {set;get;}
+        public DbSet<Article> articles {set;get;}
             
     }
 }
