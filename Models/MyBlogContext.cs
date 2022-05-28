@@ -1,8 +1,9 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace razorweb.models{
     //razorweb.models.MyBlogContext
-    public class MyBlogContext : DbContext {
+    public class MyBlogContext : IdentityDbContext<AppUser> {
         public MyBlogContext(DbContextOptions<MyBlogContext> options) : base(options)
         {
         }
@@ -12,6 +13,13 @@ namespace razorweb.models{
          protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            foreach (var entitytype in builder.Model.GetEntityTypes())
+            {
+                var tableName = entitytype.GetTableName();
+                if(tableName.StartsWith("AspNet")){
+                    entitytype.SetTableName(tableName.Substring(6));
+                }
+            }
             
         }
         public DbSet<Article> articles {set;get;}
