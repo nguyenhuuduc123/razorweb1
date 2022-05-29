@@ -7,7 +7,7 @@ using razorweb.models;
 var builder = WebApplication.CreateBuilder(args);
 
 
-
+    
 
 
 IConfiguration configuration = builder.Configuration;
@@ -54,6 +54,11 @@ builder.Services.Configure<IdentityOptions> (options => {
     options.SignIn.RequireConfirmedEmail = true;            // Cấu hình xác thực địa chỉ email (email phải tồn tại)
     options.SignIn.RequireConfirmedPhoneNumber = false;     // Xác thực số điện thoại
 
+});
+builder.Services.ConfigureApplicationCookie(options => {
+    options.LoginPath = "/login/";
+    options.LogoutPath = "/logout/";
+    options.AccessDeniedPath = "/khongduoctruycap.html";
 });
 var app = builder.Build();
 // Configure the HTTP request pipeline
