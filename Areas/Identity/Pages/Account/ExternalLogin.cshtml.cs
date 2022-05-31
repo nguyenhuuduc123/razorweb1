@@ -92,7 +92,9 @@ namespace apprazor.Areas.Identity.Pages.Account
         public IActionResult OnPost(string provider, string returnUrl = null)
         {
             // Request a redirect to the external login provider.
+            // chuyen huong den trang extenrnallogin xu ly với phương thức ongetcallback
             var redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new { returnUrl });
+            // propertise chứa các thông tin về dịch vụ ngoài
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             return new ChallengeResult(provider, properties);
         }
@@ -152,6 +154,59 @@ namespace apprazor.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
+                // nếu tất cả dữ liệu submit đều chính xác
+                // thấy thông tin user
+                var registerUser = await _userManager.FindByEmailAsync(Input.Email);
+                string external_email = null;
+                AppUser externalEmailUser = null;
+                // đặc tính mô tả đối tượng
+                if(info.Principal.HasClaim(c => c.Type == ClaimTypes.Email)){
+                    external_email = info.Principal.FindFirstValue(ClaimTypes.Email);
+
+                }
+                if(externalEmailUser != null){
+                    externalEmailUser = await _userManager.FindByEmailAsync(external_email);
+                }
+                if((registerUser != null) && (externalEmailUser != null)){
+                    if(registerUser.Id == externalEmailUser.Id){
+                   var  resultlink =  await _userManager.AddLoginAsync(registerUser, info);
+                    
+                    if(resultlink.Succeeded){
+                          await  _signInManager.SignInAsync(registerUser,isPersistent: false);
+                        return LocalRedirect(returnUrl);
+                    }
+                    }
+                }
+                else{
+                    ModelState.AddModelError(string.Empty,"khong lien ket được");
+                    return Page();
+                }
+                if((externalEmailUser != null) && (registerUser != null)){
+                        ModelState.AddModelError(string.Empty,"không hỗ trợ tài khoản mới có email từ dịch vụ ngoài");
+                    return Page();
+                }
+                 if((externalEmailUser != null) && (external_email== Input.Email)){
+                            // chua co tai khoan , tao tai` khoản rồi đăng nhập ngay
+                            var newuser = new AppUser(){
+                                UserName = external_email,
+                                Email = external_email,
+                            };
+                var resultnewuser =  await  _userManager.CreateAsync(newuser);
+                if(resultnewuser.Succeeded){
+                   await _userManager.AddLoginAsync(newuser,info);
+                   var code = await _userManager.GenerateEmailConfirmationTokenAsync(newuser);
+                  await _userManager.ConfirmEmailAsync(newuser,code);
+                  await _signInManager.SignInAsync(newuser,isPersistent : false);
+                  return LocalRedirect(returnUrl);
+                }
+                else {
+                    ModelState.AddModelError(string.Empty,"không tạo được user mới");
+                    return Page();
+                }
+                 }
+
+
+
                 var user = CreateUser();
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);

@@ -36,7 +36,7 @@ namespace apprazor.Areas.Identity.Pages.Account
             }
             else
             {
-                returnUrl = Url.Content("~/");
+                returnUrl = Url.Content("~/");// đường dẫn đến trang chủ
                  return LocalRedirect(returnUrl);
                 // This needs to be a redirect so that the browser performs a new
                 // request and the identity for the user gets updated.

@@ -48,7 +48,9 @@ namespace apprazor.Areas.Identity.Pages.Account
             var result = await _userManager.ConfirmEmailAsync(user, code);
             StatusMessage = result.Succeeded ? "Thank you for confirming your email." : "Error confirming your email.";
             if(result.Succeeded){
+                // đăng nhập ngay 
                 await _siginmanager.SignInAsync(user,false);
+                // chuyển tới trang chủ
                 return RedirectToPage("/index");
             }
             else{

@@ -15,6 +15,7 @@ namespace razorweb.models{
             base.OnModelCreating(builder);
             foreach (var entitytype in builder.Model.GetEntityTypes())
             {
+                // entity type tương ứng với model trong cơ sỏ dữ liệu
                 var tableName = entitytype.GetTableName();
                 if(tableName.StartsWith("AspNet")){
                     entitytype.SetTableName(tableName.Substring(6));

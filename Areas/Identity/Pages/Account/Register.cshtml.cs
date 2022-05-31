@@ -109,28 +109,44 @@ namespace apprazor.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
+            // kiểm tra có dịch vụ ngoài không
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            foreach(var provider in ExternalLogins){
+                _logger.LogInformation(provider.Name);
+            }
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
+            // trang chủ
             returnUrl ??= Url.Content("~/");
+            // dịch vụ ngoài như là google , facebook
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+           // nếu tất cả dữ liệu đăng ký hợp lệ
             if (ModelState.IsValid)
             {
-                var user = CreateUser();
-                await _userStore.SetUserNameAsync(user, Input.UserName, CancellationToken.None);
-                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                
+                //var user = CreateUser();
+              //  await _userStore.SetUserNameAsync(user, Input.UserName, CancellationToken.None);
+              //  await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+             
+             // tạo ra user với tên đăng nhập và email đã submit
+               var user = new AppUser(){
+                   UserName = Input.UserName,
+                   Email = Input.Email
+               };
+               // tạo ra user với mật khẩu  ( trả về true nếu thành công)
                 var result = await _userManager.CreateAsync(user, Input.Password);
-
+                    // nếu tạo thành công
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("đã tạo user mới");
-
+                    // lấy id của User
                     var userId = await _userManager.GetUserIdAsync(user);
                     // phát sinh token để xác nhận email
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    // encode để đính kèm mã trên url
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     // https://7171/identity/account/confirmEmail/?Userid=dsffd&code=dsfdg&
                     var callbackUrl = Url.Page(
@@ -138,10 +154,11 @@ namespace apprazor.Areas.Identity.Pages.Account
                         pageHandler: null,
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
-
+                    // gửi email , gọi đến trang từ đường dẫn call back url 
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
+                    
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
                         return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });

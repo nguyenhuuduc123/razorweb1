@@ -6,8 +6,6 @@
 @{
 
 }
-
-
 <ul class = "navbar-nav">
     @if(signinmanager.IsSignedIn(User)){
         <li class = "nav-item"><a class = "nav-link text-dark"  asp-area ="Identity" asp-page = "/Account/Manage/Index"> xin chào @usermanager.GetUserName(User)</a></li>
