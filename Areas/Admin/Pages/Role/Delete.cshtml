@@ -1,0 +1,26 @@
+﻿@page   "/admin/delete-role/{roleid}"
+@model App.Admin.Role.DeleteModel
+
+@{
+    ViewData["Title"] = "xóa role";
+   
+}
+
+<h2>@ViewData["Title"]</h2>
+<partial name="_StatusMessage" model ="@Model.StatusMessage"></partial>
+<hr>
+<p> bạn có chắc chắn muốn xóa <strong>@ViewData["rolename"]</strong></p>
+<div class="row">
+    <div class="col-md-6">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+           <div class = "form-group pt-3">
+                <input type="submit" value="xóa" class = "btn btn-danger">
+                <a asp-page="./Index" class= "btn btn-primary">quay lại danh sách các role</a>
+           </div>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

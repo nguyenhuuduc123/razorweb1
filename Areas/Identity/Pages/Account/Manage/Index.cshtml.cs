@@ -6,6 +6,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -13,6 +14,7 @@ using razorweb.models;
 
 namespace apprazor.Areas.Identity.Pages.Account.Manage
 {
+    [Authorize]
     public class IndexModel : PageModel
     {
         private readonly UserManager<AppUser> _userManager;
@@ -59,6 +61,11 @@ namespace apprazor.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+             [Display(Name = "địa chỉ")]
+             [StringLength(400)]
+            public string EmailAddress {get;set;}
+             [Display(Name = "ngày sinh")]
+            public DateTime? BirthDay{get;set;}
         }
 
         private async Task LoadAsync(AppUser user)
@@ -70,7 +77,9 @@ namespace apprazor.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                EmailAddress = user.EmailAddress,
+                BirthDay = user.BirthDay
             };
         }
 
@@ -110,9 +119,13 @@ namespace apprazor.Areas.Identity.Pages.Account.Manage
                     return RedirectToPage();
                 }
             }
+            user.EmailAddress = Input.EmailAddress;
+            user.BirthDay = Input.BirthDay;
+            user.PhoneNumber  = Input.PhoneNumber;
+            await _userManager.UpdateAsync(user);
 
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your profile has been updated";
+            StatusMessage = "hồ sơ của bạn đã được cập nhập";
             return RedirectToPage();
         }
     }

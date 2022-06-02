@@ -1,3 +1,4 @@
+using App.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +26,7 @@ AddEntityFrameworkStores<MyBlogContext>().
 AddDefaultTokenProviders();
 // builder.Services.AddDefaultIdentity<AppUser>().
 // AddEntityFrameworkStores<MyBlogContext>();
-
+builder.Services.AddSingleton<IdentityErrorDescriber, AppIdentityErrorDescriber>();
 builder.Services.Configure<IdentityOptions> (options => {
     // Thiết lập về Password
     options.Password.RequireDigit = false; // Không bắt phải có số
@@ -85,4 +86,5 @@ app.Run();
 
 /*
 dotnet aspnet-codegenerator razorpage -m razorweb.models.Article -dc razorweb.models.MyBlogContext -outDir Areas/Identity/Pages -udl --referenceScriptLibraries
+tạo nhanh trang asp : dotnet new page -n Create -o Areas/Admin/Pages/Role -na App.Admin.Role
 */

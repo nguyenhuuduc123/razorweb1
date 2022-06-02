@@ -1,0 +1,28 @@
+﻿@page "/admin/roles"
+@model App.Admin.Role.IndexModel
+@{
+    ViewData["Title"] = "danh sách các vai trò (role)";
+}
+<h2>@ViewData["Title"]</h2>
+<partial name="_StatusMessage" model = "@Model.StatusMessage"/>
+<div class = "p-3 m-2">
+    <a asp-page = "./Create" asp-area="Admin" class = "btn btn-primary">tạo role mới</a>
+    <a asp-page = "../User/Index" asp-area="Areas"  class = "btn btn-primary">quản lý thành viên</a>
+</div>
+<table class = "table table-bordered">
+<tr>
+    <th> tên role(vai trò) </th>
+    <th> tác vụ </th>  
+</tr>
+@foreach (var role in @Model.roles)
+{
+    <tr>
+           <td>@role.Name</td> 
+           <td>
+               <a class = "btn btn-success btn-sm" asp-page = "./Edit" asp-area="Admin" asp-route-roleid = "@role.Id">cập nhập</a>
+              <a class = "btn btn-danger btn-sm" asp-page = "./Delete" asp-area="Admin" asp-route-roleid = "@role.Id">xóa</a>
+           </td>
+    </tr>
+  
+}
+</table>

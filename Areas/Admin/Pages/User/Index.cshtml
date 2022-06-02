@@ -1,0 +1,41 @@
+﻿@page "/admin/member"
+@model App.Admin.User.IndexModel
+@{
+    ViewData["Title"] = "danh sách các thành viên";
+}
+<h2>@ViewData["Title"]</h2>
+<partial name="_StatusMessage" model = "@Model.StatusMessage"/>
+<p>tổng số thành viên @Model.totalUsers</p>
+<table class = "table table-bordered">
+<tr>
+    <th> tên user </th>
+    <th> vai trò (role) </th>  
+    <th> tác vụ</th>
+</tr>
+@foreach (var user in @Model.users)
+{
+    <tr>
+           <td>@user.UserName</td> 
+           <th>
+               @if(string.IsNullOrEmpty(user.RoleNames)){
+                    <a class = "text-success" asp-page = "./AddRole" asp-area="Admin" asp-route-id = "@user.Id">thêm role</a>
+               }
+             <a class = "text-dark text-decorator" asp-page = "./AddRole" asp-area="Admin" asp-route-id = "@user.Id">@user.RoleNames</a>
+           </th>
+           <td>
+               <a class = "btn btn-success btn-sm" asp-page = "./SetPassword" asp-area="Admin" asp-route-id = "@user.Id">đặt mật khẩu</a>
+                <a class = "btn btn-success btn-sm" asp-page = "./AddRole" asp-area="Admin" asp-route-id = "@user.Id">cập nhập</a>
+         </td>
+    </tr>
+  
+}
+</table>
+@{
+    var PagingModel = new PagingModel(){
+        countPages = Model.countPages,
+        currentPage = Model.currentPage,
+        generateUrl = (int? p) => Url.Page("./Index", new {p = p}) 
+        
+    };
+}
+<partial name = "_Paging" model = "@PagingModel" />
